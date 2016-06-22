@@ -3,17 +3,17 @@
 <!-- config.xml reference: https://build.phonegap.com/docs/config-xml -->
 <widget xmlns     = "http://www.w3.org/ns/widgets"
         xmlns:gap = "http://phonegap.com/ns/1.0"
-        id        = "com.phonegap.helloworld"
+        id        = "com.ultimatesoftware.bustracker"
         version   = "1.0.0">
 
-    <name>Hello World</name>
+    <name>Bus Tracker</name>
 
     <description>
         Bus tracker app
     </description>
 
     <author href="https://ultilabs.xyz" email="utlilabs@ultimatesoftware.com">
-        PhoneGap Team
+        UltiLabs
     </author>
 
     <!--
@@ -97,7 +97,7 @@
     -->
 
     <access origin="*"/>
-    
+
     <!-- Added the following intents to support the removal of whitelist code from base cordova to a plugin -->
     <!-- Whitelist configuration. Refer to https://cordova.apache.org/docs/en/edge/guide_appdev_whitelist_index.md.html -->
     <plugin name="cordova-plugin-whitelist" version="1" />
