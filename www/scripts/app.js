@@ -1,4 +1,4 @@
-var busRoutes = ['Route 1','Route 2','Route 4','Route 5','Route 6','Route 7','Route 9','Route 10','Route 11','Route 12','Route 14','Route 15','Route 16','Route 18','Route 19','Route 20','Route 22','Route 23','Route 28','Route 30','Route 31','Route 34','Route 36','Route 40','Route 42','Route 48','Route 50','Route 55','Route 56 Shuttle','Route 60','Route 62','Route 72','Route 81','Route 83','Route 88'];
+var busRoutes = ['Route 1', 'Route 2', 'Route 4', 'Route 5', 'Route 6', 'Route 7', 'Route 9', 'Route 10', 'Route 11', 'Route 12', 'Route 14', 'Route 15', 'Route 16', 'Route 18', 'Route 19', 'Route 20', 'Route 22', 'Route 23', 'Route 28', 'Route 30', 'Route 31', 'Route 34', 'Route 36', 'Route 40', 'Route 42', 'Route 48', 'Route 50', 'Route 55', 'Route 56 Shuttle', 'Route 60', 'Route 62', 'Route 72', 'Route 81', 'Route 83', 'Route 88'];
 
 var directionsService,
     stepDisplay,
@@ -7,7 +7,9 @@ var directionsService,
     map,
     geocoder,
     searchBox,
-    myPosition;
+    myPosition,
+    myMarker,
+    watchId;
 
 function initMap() {
 
@@ -15,15 +17,20 @@ function initMap() {
     stepDisplay = new google.maps.InfoWindow;
     geocoder = new google.maps.Geocoder();
 
+    // Setup map based on current positon
     navigator.geolocation.getCurrentPosition(function(position) {
 
+        // the geolocation coords do not match the object spec expected by api calls
+        // this constructs the type expected
         myPosition = { lat: position.coords.latitude, lng: position.coords.longitude };
 
+        // build map and center on current position
         map = new google.maps.Map(document.getElementById('map'), {
             zoom: 13,
             center: myPosition
         });
 
+        //enable direction layer
         directionsDisplay = new google.maps.DirectionsRenderer({ map: map });
 
         // Create the search box and link it to the UI element.
@@ -38,7 +45,8 @@ function initMap() {
 
         searchBox.addListener('places_changed', selectPlace);
 
-        var marker = new google.maps.Marker({
+        // Set current marker
+        myMarker = new google.maps.Marker({
             map: map,
             position: myPosition
         });
@@ -105,4 +113,38 @@ function attachInstructionText(stepDisplay, marker, text, map) {
         stepDisplay.setContent(text);
         stepDisplay.open(map, marker);
     });
+}
+
+function checkInToBus(route) {
+
+    // change state of button to checked in
+    
+    // remove current positon marker
+    myMarker.setMap(null);
+
+    // create marker with appropriate color to match my preferences
+    myMarker = new google.maps.Marker({
+        map: map,
+        position: myPosition
+    });
+
+    // watch for position changes
+    watchId = navigator.geolocation.watchPosition(geolocationSuccess);
+}
+
+function updateCurrentPosition(position) {
+    myPosition = { lat: position.coords.latitude, lng: position.coords.longitude };
+
+    // remove current positon marker
+    myMarker.setMap(null);
+
+    // create marker with appropriate color to match my preferences
+    myMarker = new google.maps.Marker({
+        map: map,
+        position: myPosition
+    });
+}
+
+function checkOutFromBus() {
+    navigator.geolocation.clearWatch(watchID);
 }
