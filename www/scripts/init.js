@@ -3,7 +3,7 @@
 
     function onDeviceReady() {
         document.addEventListener("online", onOnline, false);
-        document.addEventListener("resume", onResume, false);        
+        document.addEventListener("resume", onResume, false);
         loadMapsApi();
     }
 
@@ -28,6 +28,7 @@
         initMap();
     };
 
+    //comment out onDeviceReady when deploying - It's the Wild West, baby.
     onDeviceReady();
-    // document.addEventListener("deviceready", onDeviceReady, false);
+    document.addEventListener("deviceready", onDeviceReady, false);
 })(window);
