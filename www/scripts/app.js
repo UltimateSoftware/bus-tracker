@@ -16,9 +16,11 @@ function initMap() {
     directionsService = new google.maps.DirectionsService;
     stepDisplay = new google.maps.InfoWindow;
     geocoder = new google.maps.Geocoder();
+    console.log('in init function');
 
     // Setup map based on current positon
     navigator.geolocation.getCurrentPosition(function(position) {
+        console.log("got current position - ", position);
 
         // the geolocation coords do not match the object spec expected by api calls
         // this constructs the type expected
@@ -50,6 +52,10 @@ function initMap() {
             map: map,
             position: myPosition
         });
+    }, function (err) {
+        console.log("Position error - ", err);
+    }, {
+        timeout: 5000
     });
 }
 
