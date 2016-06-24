@@ -118,7 +118,7 @@ function attachInstructionText(stepDisplay, marker, text, map) {
 function checkInToBus(route) {
 
     // change state of button to checked in
-    
+
     // remove current positon marker
     myMarker.setMap(null);
 
@@ -129,7 +129,7 @@ function checkInToBus(route) {
     });
 
     // watch for position changes
-    watchId = navigator.geolocation.watchPosition(geolocationSuccess);
+    watchId = navigator.geolocation.watchPosition(updateCurrentPosition);
 }
 
 function updateCurrentPosition(position) {
