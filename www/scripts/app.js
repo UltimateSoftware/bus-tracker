@@ -13,15 +13,9 @@ var directionsService,
 
 function makeCheckInOutButton(clickHandler) {
     var button = $('<div>');
+    button.addClass('waves-effect').addClass('waves-light').addClass('btn');
     button.css({
-        backgroundColor: 'white',
-        border: '1px solid black',
-        textAlign: 'center',
-        cursor: 'pointer',
-        padding: '10px',
-        margin: '10px',
-        fontSize: '15px',
-        userSelect: 'none'
+        margin: '10px'
     });
     button.text('Check In');
     var checkIn = true;
@@ -35,6 +29,20 @@ function makeCheckInOutButton(clickHandler) {
         clickHandler(checkIn);
     });
     return button[0];
+}
+
+function makeRoutePicker(routes) {
+    var modal = $('<div>');
+    modal.addClass('modal').attr('id', 'route-pick-modal');
+    var modalContent= $('<div>');
+    modalContent.addClass('modal-content');
+    modalContent.append($('<h4>').text('Pick Your Route'));
+    var routeContainer = $('<div>');
+    //TODO populate route container
+    modalContent.append(routeContainer);
+    modal.append(modalContent);
+    var modalFooter = $('<div>');
+    //add button, etc.
 }
 
 function initMap() {
@@ -68,7 +76,9 @@ function initMap() {
 
         //create check in and out button
         var checkButton = makeCheckInOutButton(function (checkIn) {
-            
+            //make and display modal
+            var routes = []; //TODO pick routes s.t. the routes are the ones that you could possibly be on
+            var routePicker = makeRoutePicker(routes);
         });
         checkButton.index = 3;
         map.controls[google.maps.ControlPosition.TOP_RIGHT].push(checkButton);
