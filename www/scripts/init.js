@@ -5,6 +5,21 @@
         document.addEventListener("online", onOnline, false);
         document.addEventListener("resume", onResume, false);
         loadMapsApi();
+        connectToServerSocket();
+    }
+
+    function connectToServerSocket() {
+      var socket = io.connect('http://localhost:8888');
+      socket.on('pushLocations', function (locs) {
+          console.log('NEW LOCS PUSHED!!!!!!!!!!!!');
+          console.log(locs);
+          global.locs = locs; // TODO: call function to wipe all current markers, and create new markers for each.
+          // global.socket.emit('checkin', 1010101); // TODO: put in function that calls checkin.
+          // global.socket.emit('checkout', 1010101); // TODO: put in function that calls checkout.
+          // global.socket.emit('updateLocation' { lat: 1, long: 1 }); // TODO: call this whenever we update our location.
+      });
+
+      global.socket = socket;
     }
 
     function onOnline() {
