@@ -11,6 +11,32 @@ var directionsService,
     myMarker,
     watchId;
 
+function makeCheckInOutButton(clickHandler) {
+    var button = $('<div>');
+    button.css({
+        backgroundColor: 'white',
+        border: '1px solid black',
+        textAlign: 'center',
+        cursor: 'pointer',
+        padding: '10px',
+        margin: '10px',
+        fontSize: '15px',
+        userSelect: 'none'
+    });
+    button.text('Check In');
+    var checkIn = true;
+    button.click(function () {
+        checkIn = !checkIn;
+        if (checkIn) {
+            button.text('Check In');
+        } else {
+            button.text('Check Out');
+        }
+        clickHandler(checkIn);
+    });
+    return button[0];
+}
+
 function initMap() {
 
     directionsService = new google.maps.DirectionsService;
@@ -39,6 +65,13 @@ function initMap() {
         var input = document.getElementById('pac-input');
         searchBox = new google.maps.places.SearchBox(input);
         map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+
+        //create check in and out button
+        var checkButton = makeCheckInOutButton(function (checkIn) {
+            
+        });
+        checkButton.index = 3;
+        map.controls[google.maps.ControlPosition.TOP_RIGHT].push(checkButton);
 
         // Bias the SearchBox results towards current map's viewport.
         map.addListener('bounds_changed', function() {
