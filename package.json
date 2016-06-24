@@ -1,0 +1,27 @@
+{
+  "name": "bus-tracker",
+  "version": "1.0.0",
+  "description": "Bus tracking system to help people know where buses are in their route and plan accordingly.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/UltimateSoftware/bus-tracker.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/UltimateSoftware/bus-tracker/issues"
+  },
+  "homepage": "https://github.com/UltimateSoftware/bus-tracker#readme",
+  "dependencies": {
+    "express": "^4.14.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.9.2"
+  }
+}
