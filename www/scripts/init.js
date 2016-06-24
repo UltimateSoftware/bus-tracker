@@ -11,8 +11,8 @@
     function connectToServerSocket() {
       var socket = io.connect('http://localhost:8888');
       socket.on('pushLocations', function (locs) {
-          console.log('NEW LOCS PUSHED!!!!!!!!!!!!');
-          console.log(locs);
+          // console.log('NEW LOCS PUSHED!!!!!!!!!!!!');
+          // console.log(locs);
           global.locs = locs; // TODO: call function to wipe all current markers, and create new markers for each.
           // global.socket.emit('checkin', 1010101); // TODO: put in function that calls checkin.
           // global.socket.emit('checkout', 1010101); // TODO: put in function that calls checkout.
