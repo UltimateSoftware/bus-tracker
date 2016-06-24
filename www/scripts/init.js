@@ -24,9 +24,10 @@
     }
 
     global.onMapsApiLoaded = function () {
+        console.log("Api loaded");
         initMap();
     };
 
-    //onDeviceReady();
-    document.addEventListener("deviceready", onDeviceReady, false);
+    onDeviceReady();
+    // document.addEventListener("deviceready", onDeviceReady, false);
 })(window);
