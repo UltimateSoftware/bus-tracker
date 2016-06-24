@@ -19,7 +19,8 @@
   },
   "homepage": "https://github.com/UltimateSoftware/bus-tracker#readme",
   "dependencies": {
-    "express": "^4.14.0"
+    "express": "^4.14.0",
+    "materialize-css": "^0.97.6"
   },
   "devDependencies": {
     "nodemon": "^1.9.2"
