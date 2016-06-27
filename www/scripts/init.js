@@ -24,7 +24,7 @@
     }
 
     function loadMapsApi() {
-        if ((navigator.connection && navigator.connection.type === Connection.NONE) || global.google !== undefined) {
+        if ((false && navigator.connection.type === Connection.NONE) || global.google !== undefined) {
             return;
         }
 
