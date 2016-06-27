@@ -406,7 +406,7 @@ function onDeviceReady () {
 
     // If you wish to turn OFF background-tracking, call the #stop method.
     // backgroundGeolocation.stop();
-
+}
 /*
 Returns distance in meters
 */
