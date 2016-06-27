@@ -17,18 +17,18 @@ var directionsService,
 
 function CheckInOutButton(clickHandler) {
 
-  this.button = $('<div>');
-  this.button.addClass('waves-effect').addClass('waves-light').addClass('btn').addClass('modal-trigger');
-  this.button.attr('href', 'route-pick-modal');
-  this.button.css({
-      margin: '10px'
-  });
-  this.setState(false);
-  var self = this;
-  this.button.click(function() {
+    this.button = $('<div>');
+    this.button.addClass('waves-effect').addClass('waves-light').addClass('btn').addClass('modal-trigger');
+    this.button.attr('href', 'route-pick-modal');
+    this.button.css({
+        margin: '10px'
+    });
+    this.setState(false);
+    var self = this;
+    this.button.click(function() {
         self.setState(!self.checkIn);
         clickHandler(self.checkIn);
-  } );
+    });
 
 }
 
@@ -48,7 +48,7 @@ function makeRoutePicker(busRoutes, button) {
     var modal = $('<div>');
     modal.addClass('modal').attr('id', 'route-pick-modal');
 
-    var modalContent= $('<div>');
+    var modalContent = $('<div>');
     modalContent.addClass('modal-content');
     modalContent.append($('<h4>').text('Pick Your Route'));
     var routeContainer = $('<div>');
@@ -81,15 +81,15 @@ function makeRoutePicker(busRoutes, button) {
     var modalFooter = $('<div>').addClass('modal-footer');
     var closeButton = $('<a>').addClass('waves-effect').addClass('waves-red').addClass('btn-flat').text('Cancel');
     closeButton.click(function() {
-      button.setState(false);
-      modal.closeModal();
-      modal.remove();
+        button.setState(false);
+        modal.closeModal();
+        modal.remove();
     });
     modalFooter.append(closeButton);
     modal.append(modalFooter);
 
-    $(document).on('click', '.lean-overlay', function(){
-      button.setState(false);
+    $(document).on('click', '.lean-overlay', function() {
+        button.setState(false);
     });
 
     return modal;
@@ -252,53 +252,53 @@ function checkInToBus(route, button) {
         position: myPosition
     });
 
-    window.socket.emit('checkin', route)
+    window.socket.emit('checkin ', route)
 
-    // watch for position changes
-    watchId = navigator.geolocation.watchPosition(updateCurrentPosition);
-}
-
-function updateCurrentPosition(position) {
-    myPosition = { lat: position.coords.latitude, lng: position.coords.longitude };
-
-    // remove current positon marker
-    myMarker.setMap(null);
-
-    // create marker with appropriate color to match my preferences
-    myMarker = new google.maps.Marker({
-        map: map,
-        position: myPosition
-    });
-
-    window.socket.emit('updateLocation', myPosition);
-}
-
-function checkOutFromBus() {
-    navigator.geolocation.clearWatch(watchID);
-    window.socket.emit('checkout');
-}
-
-function updatePeoplesPostions(locs) {
-    console.log(locs);
-
-    // First, remove any existing markers from the map.
-    for (var i = 0; i < peopleArray.length; i++) {
-        peopleArray[i].setMap(null);
+        // watch for position changes
+        watchId = navigator.geolocation.watchPosition(updateCurrentPosition);
     }
 
-    peopleArray = [];
+    function updateCurrentPosition(position) {
+        myPosition = { lat: position.coords.latitude, lng: position.coords.longitude };
 
-    // Add everyones current positon
-    for (var i = 0; i < locs.length; i++) {
+        // remove current positon marker
+        myMarker.setMap(null);
 
-        var personMarker = new google.maps.Marker({
+        // create marker with appropriate color to match my preferences
+        myMarker = new google.maps.Marker({
             map: map,
-            position: { lat: locs[i].lat, lng: locs[i].lng },
-            title: locs[i].route,
-            icon: "http://maps.google.com/mapfiles/ms/icons/purple-dot.png"
+            position: myPosition
         });
 
-        attachInstructionText(personMarker, "BUS: " + locs[i].route)
-        peopleArray[i] = personMarker;
+        window.socket.emit('updateLocation', myPosition);
     }
-}
+
+    function checkOutFromBus() {
+        navigator.geolocation.clearWatch(watchID);
+        window.socket.emit('checkout');
+    }
+
+    function updatePeoplesPostions(locs) {
+        console.log(locs);
+
+        // First, remove any existing markers from the map.
+        for (var i = 0; i < peopleArray.length; i++) {
+            peopleArray[i].setMap(null);
+        }
+
+        peopleArray = [];
+
+        // Add everyones current positon
+        for (var i = 0; i < locs.length; i++) {
+
+            var personMarker = new google.maps.Marker({
+                map: map,
+                position: { lat: locs[i].lat, lng: locs[i].lng },
+                title: locs[i].route,
+                icon: "http://maps.google.com/mapfiles/ms/icons/purple-dot.png"
+            });
+
+            attachInstructionText(personMarker, "BUS: " + locs[i].route)
+            peopleArray[i] = personMarker;
+        }
+    }
