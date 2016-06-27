@@ -4,14 +4,16 @@ const cors = require('cors');
 const express = require('express');
 const app = express();
 
-const Server = require('socket.io');
-
-
 const SOCKET_PORT = 2223;
 const PORT = 5000;
 const PATHS = {
     app: path.join(__dirname, 'www')
 };
+
+const expressServer = app.listen(PORT, () => {
+    console.log(`==> Listening on port: ${PORT}`);
+    setInterval(pushLocations, 10 * 1000);
+});
 
 var connections = [];
 
@@ -22,12 +24,9 @@ app.get('/', function response(req, res) {
     res.sendFile(path.join(PATHS.app, 'index.html'));
 });
 
-app.listen(PORT, () => {
-    console.log(`==> Listening on port: ${PORT}`);
-    setInterval(pushLocations, 10 * 1000);
-});
 
-const io = new Server().attach(SOCKET_PORT);
+
+const io = require('socket.io')(server);
 
 io.on('connection', (socket) => {
     console.log(`SOCKET CONNECTED: ${socket.id}`);
