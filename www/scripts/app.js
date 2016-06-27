@@ -11,37 +11,40 @@ var directionsService,
     myPosition,
     myMarker,
     watchId,
-    transitRoutes = [],
-    CHECK_IN_TEXT = 'Check In',
-    CHECK_OUT_TEXT = 'Check Out'
+    transitRoutes = [];
 
 
-function makeCheckInOutButton(clickHandler) {
-    var button = $('<div>');
-    button.addClass('waves-effect').addClass('waves-light').addClass('btn').addClass('modal-trigger');
 
-    button.attr('href', 'route-pick-modal');
-    // button.leanModal();
-    button.css({
-        margin: '10px'
-    });
-    button.text(CHECK_IN_TEXT);
-    var checkIn = true; //CheckIn means you're about to check in
-    button.click(function () {
-        if (checkIn) {
-            button.text(CHECK_OUT_TEXT);
-        } else {
-            button.text(CHECK_IN_TEXT);
-        }
+function CheckInOutButton(clickHandler) {
+
+  this.button = $('<div>');
+  this.button.addClass('waves-effect').addClass('waves-light').addClass('btn').addClass('modal-trigger');
+  this.button.attr('href', 'route-pick-modal');
+  this.button.css({
+      margin: '10px'
+  });
+  this.setState(false);
+  var self = this;
+  this.button.click(function() {
+        self.setState(!self.checkIn);
+        clickHandler(self.checkIn);
+  } );
+
+}
+
+CheckInOutButton.prototype.CHECK_IN_TEXT = 'Check In';
+CheckInOutButton.prototype.CHECK_OUT_TEXT = 'Check Out';
+CheckInOutButton.prototype.setState = function(checkIn) {
+  this.checkIn = checkIn;
+  if (this.checkIn) {
+      this.button.text(CheckInOutButton.prototype.CHECK_OUT_TEXT);
+  } else {
+      this.button.text(CheckInOutButton.prototype.CHECK_IN_TEXT);
+  }
 
         checkInToBus('ROute 23');
 
-        clickHandler(checkIn);
-        checkIn = !checkIn;
-    });
-    return button[0];
 }
-
 
 function makeRoutePicker(transitRoutes, button) {
     console.log(transitRoutes);
@@ -65,13 +68,18 @@ function makeRoutePicker(transitRoutes, button) {
     modal.append(modalContent);
     var modalFooter = $('<div>').addClass('modal-footer');
     var closeButton = $('<a>').addClass('waves-effect').addClass('waves-red').addClass('btn-flat').text('Cancel');
-    closeButton.click(function(){
-      button.text(CHECK_IN_TEXT);
+    closeButton.click(function() {
+      button.setState(false);
       modal.closeModal();
       modal.remove();
     });
     modalFooter.append(closeButton);
     modal.append(modalFooter);
+
+    $(document).on('click', '.lean-overlay', function(){
+      button.setState(false);
+    });
+
     return modal;
 }
 
@@ -106,17 +114,21 @@ function initMap() {
         map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
 
         // create check in and out button
-        var checkButton = makeCheckInOutButton(function(checkIn) {
-          if(checkIn) {
-            var routePicker = makeRoutePicker(transitRoutes, $(checkButton));
-            $('body').append(routePicker);
-            $('#route-pick-modal').openModal();
-          } else {
-            console.log('woo!');
-          }
+
+        var checkButton = new CheckInOutButton(
+        // var checkButton = makeCheckInOutButton(
+          function(checkIn) {
+            if(checkIn) {
+              var routePicker = makeRoutePicker(transitRoutes, checkButton);
+              $('body').append(routePicker);
+              $('#route-pick-modal').openModal();
+            } else {
+              console.log('woo!');
+            }
         });
-        checkButton.index = 3;
-        map.controls[google.maps.ControlPosition.TOP_RIGHT].push(checkButton);
+        var buttonElement = checkButton.button[0];
+        buttonElement.index = 3;
+        map.controls[google.maps.ControlPosition.TOP_RIGHT].push(buttonElement);
 
         // Bias the SearchBox results towards current map's viewport.
         map.addListener('bounds_changed', function() {
