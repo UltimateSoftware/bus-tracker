@@ -10,8 +10,8 @@ var directionsService,
     searchBox,
     myPosition,
     myMarker,
-    watchId,
-    transitRoutes = [];
+    watchId;
+    // transitRoutes = [];
 
 
 
@@ -41,13 +41,9 @@ CheckInOutButton.prototype.setState = function(checkIn) {
   } else {
       this.button.text(CheckInOutButton.prototype.CHECK_IN_TEXT);
   }
-
-        checkInToBus('ROute 23');
-
 }
 
-function makeRoutePicker(transitRoutes, button) {
-    console.log(transitRoutes);
+function makeRoutePicker(busRoutes, button) {
 
     var modal = $('<div>');
     modal.addClass('modal').attr('id', 'route-pick-modal');
@@ -57,12 +53,28 @@ function makeRoutePicker(transitRoutes, button) {
     modalContent.append($('<h4>').text('Pick Your Route'));
     var routeContainer = $('<div>');
 
+    // routeContainer.addClass('input-field');
     routeContainer.addClass('collection');
 
-    transitRoutes.forEach(function(route) {
-      var collectionItem = $('<a>').addClass('collection-item').text(route.instructions);
+    // var selectDropdown = $('<select>').addClass('browser-default');
+
+    busRoutes.forEach(function(route) {
+      var collectionItem = $('<a>').addClass('collection-item').text(route);
+
+      collectionItem.click(function(){
+        checkInToBus(route, button);
+      });
+
       routeContainer.append(collectionItem);
+
+      // var routeOption = $('<option>').attr('value', route).text(route);
+      // selectDropdown.append(routeOption);
+
     });
+
+    // selectDropdown.select2();
+    // routeContainer.append(selectDropdown);
+
 
     modalContent.append(routeContainer);
     modal.append(modalContent);
@@ -114,12 +126,10 @@ function initMap() {
         map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
 
         // create check in and out button
-
         var checkButton = new CheckInOutButton(
-        // var checkButton = makeCheckInOutButton(
           function(checkIn) {
             if(checkIn) {
-              var routePicker = makeRoutePicker(transitRoutes, checkButton);
+              var routePicker = makeRoutePicker(busRoutes, checkButton);
               $('body').append(routePicker);
               $('#route-pick-modal').openModal();
             } else {
@@ -184,18 +194,18 @@ function calculateAndDisplayRoute(destination) {
             directionsDisplay.setDirections(response);
             console.log(response);
             showSteps(response, markerArray);
-
-            var steps;
-            response.routes.forEach((route) => {
-               route.legs.forEach((leg) => {
-                 steps = leg.steps;
-               });
-            });
-            steps.forEach((step) => {
-              if(step.travel_mode === "TRANSIT") {
-                transitRoutes.push(step);
-              }
-            });
+            //
+            // var steps;
+            // response.routes.forEach((route) => {
+            //    route.legs.forEach((leg) => {
+            //      steps = leg.steps;
+            //    });
+            // });
+            // steps.forEach((step) => {
+            //   if(step.travel_mode === "TRANSIT") {
+            //     transitRoutes.push(step);
+            //   }
+            // });
 
         } else {
             window.alert('Directions request failed due to ' + status);
@@ -227,9 +237,11 @@ function attachInstructionText(marker, text) {
     });
 }
 
-function checkInToBus(route) {
+function checkInToBus(route, button) {
 
+    console.log('CHECKING IN BUS WOOOO');
     // change state of button to checked in
+    button.setState(false);
 
     // remove current positon marker
     myMarker.setMap(null);
