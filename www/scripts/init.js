@@ -9,7 +9,7 @@
     }
 
     function connectToServerSocket() {
-      var socket = io.connect('http://localhost:8888');
+      var socket = io.connect('http://10.55.12.102:8888');
       
 
       global.socket = socket;

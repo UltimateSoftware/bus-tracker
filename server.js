@@ -9,7 +9,7 @@ const Server = require('socket.io');
 const SOCKET_PORT = 8888;
 const PORT = 1337;
 const PATHS = {
-  app: path.join(__dirname, 'www')
+    app: path.join(__dirname, 'www')
 };
 
 var connections = [];
@@ -17,80 +17,76 @@ var connections = [];
 app.use(express.static(PATHS.app));
 
 app.get('/', function response(req, res) {
-  res.sendFile(path.join(PATHS.app, 'index.html'));
+    res.sendFile(path.join(PATHS.app, 'index.html'));
 });
 
-
-
-
 app.listen(PORT, () => {
-  console.log(`==> Listening on port: ${PORT}`);
-  setInterval(pushLocations, 10 * 1000);
+    console.log(`==> Listening on port: ${PORT}`);
+    setInterval(pushLocations, 10 * 1000);
 });
 
 const io = new Server().attach(SOCKET_PORT);
 
 io.on('connection', (socket) => {
-  console.log(`SOCKET CONNECTED: ${socket.id}`);
+    console.log(`SOCKET CONNECTED: ${socket.id}`);
 
-  connections.push({ _id: socket.id });
+    connections.push({ _id: socket.id });
 
 
-  socket.on('disconnect', () => {
-    console.log(`SOCKET DISCONNECTED: ${socket.id}`);
+    socket.on('disconnect', () => {
+        console.log(`SOCKET DISCONNECTED: ${socket.id}`);
 
-    connections = connections.filter(
-      con => con._id !== socket.id
-    );
-  });
+        connections = connections.filter(
+            con => con._id !== socket.id
+        );
+    });
 
-  socket.on('checkin', (route) => {
-    console.log('CHECKIN RECEIVED');
+    socket.on('checkin', (route) => {
+        console.log('CHECKIN RECEIVED');
 
-    const con = findConnection(socket.id);
-    // TODO handle undefined.
-    con.route = route;
-    con.checkedIn = true;
-  });
+        const con = findConnection(socket.id);       
+        con.route = route;
+        con.checkedIn = true;
+    });
 
-  socket.on('checkout', () => {
-    console.log('CHECKOUT RECEIVED');
+    socket.on('checkout', () => {
+        console.log('CHECKOUT RECEIVED');
 
-    const con = findConnection(socket.id);
-    // TODO handle undefined.
-    con.route = undefined;
-    con.checkedIn = false;
-  });
+        const con = findConnection(socket.id);
+        // TODO handle undefined.
+        con.route = undefined;
+        con.checkedIn = false;
+    });
 
-  socket.on('updateLocation', ({lat, lng}) => {
-    console.log('updateLocation RECEIVED');
+    socket.on('updateLocation', ({ lat, lng }) => {
+        console.log('updateLocation RECEIVED');
 
-    const con = findConnection(socket.id);
-    con.lat = lat;
-    con.lng = lng;
-  });
+        const con = findConnection(socket.id);
+        con.lat = lat;
+        con.lng = lng;
+    });
 
 });
 
 function pushLocations() {
-  const locs = connections
-    .filter(con => {
-      return con.checkedIn && ( con.lat && con.lng );
-    })
-    .map( con => ({
-      route: con.route,
-      lat: con.lat,
-      lng: con.lng
-    }));
-  console.log(`Pushing these locations: ${locs.join(' ')}`);
-  io.emit('pushLocations', locs);
+    const locs = connections
+        .filter(con => {
+            return con.checkedIn && (con.lat && con.lng);
+        })
+        .map(con => ({
+            route: con.route,
+            lat: con.lat,
+            lng: con.lng
+        }));
+    console.log(`Pushing these locations: ${locs.join(' ')}`);
+    io.emit('pushLocations', locs);
 }
 
 function findConnection(id) {
-  const conArray = connections.filter( con => con.id === id)
-  if(conArray.length > 0) {
-    return conArray[0];
-  } else {
-    return undefined;
-  }
+    const conArray = connections.filter(con => con._id === id)
+    if (conArray.length > 0) {
+        return conArray[0];
+    } else {
+        return undefined;
+    }
 }
