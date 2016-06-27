@@ -10,56 +10,37 @@ var directionsService,
     myPosition,
     myMarker,
     watchId,
-    transitRoutes = [];
+    transitRoutes = [],
+    CHECK_IN_TEXT = 'Check In',
+    CHECK_OUT_TEXT = 'Check Out'
 
 
-// function makeCheckInOutButton(clickHandler) {
-//     var button = $('<div>');
-//     button.addClass('waves-effect').addClass('waves-light').addClass('btn').addClass('modal-trigger');
-//     button.attr('href', '#route-pick-modal');
-//     button.css({
-//         margin: '10px'
-//     });
-//     button.text('Check In');
-//     var checkIn = true;
-//     button.click(function () {
-//         checkIn = !checkIn;
-//         if (checkIn) {
-//             button.text('Check In');
-//              $('#route-pick-modal').openModal();
-//         } else {
-//             button.text('Check Out');
-//         }
-//         // clickHandler(checkIn);
-//     });
-//     return button[0];
-// }
+function makeCheckInOutButton(clickHandler) {
+    var button = $('<div>');
+    button.addClass('waves-effect').addClass('waves-light').addClass('btn').addClass('modal-trigger');
 
-//
-// function makeRoutePicker(transitRoutes) {
-//     console.log(transitRoutes);
-//
-//     var modal = $('<div>');
-//     modal.addClass('modal').attr('id', 'route-pick-modal');
-//
-//     var modalContent= $('<div>');
-//     modalContent.addClass('modal-content');
-//     modalContent.append($('<h4>').text('Pick Your Route'));
-//     var routeContainer = $('<div>');
-//     //TODO populate route container
-//     // modalContent.append(routeContainer);
-//     // modal.append(modalContent);
-//     // var modalFooter = $('<div>');
-//     // add button, etc.
-//
-// }
+    button.attr('href', 'route-pick-modal');
+    // button.leanModal();
+    button.css({
+        margin: '10px'
+    });
+    button.text(CHECK_IN_TEXT);
+    var checkIn = true; //CheckIn means you're about to check in
+    button.click(function () {
+        if (checkIn) {
+            button.text(CHECK_OUT_TEXT);
+        } else {
+            button.text(CHECK_IN_TEXT);
+        }
+        clickHandler(checkIn);
+        checkIn = !checkIn;
+    });
+    return button[0];
+}
 
-function initMap() {
 
-    directionsService = new google.maps.DirectionsService;
-    stepDisplay = new google.maps.InfoWindow;
-    geocoder = new google.maps.Geocoder();
-    console.log('in init function');
+function makeRoutePicker(transitRoutes, button) {
+    console.log(transitRoutes);
 
     var modal = $('<div>');
     modal.addClass('modal').attr('id', 'route-pick-modal');
@@ -69,26 +50,34 @@ function initMap() {
     modalContent.append($('<h4>').text('Pick Your Route'));
     var routeContainer = $('<div>');
 
-    var checkButton = $('<div>');
-    checkButton.addClass('waves-effect').addClass('waves-light').addClass('btn').addClass('modal-trigger').attr('id', 'check-button');
-    checkButton.attr('href', '#route-pick-modal');
-    checkButton.css({
-        margin: '10px'
-    });
-    checkButton.text('Check In');
-    var checkIn = true;
-    checkButton.click(function () {
-        checkIn = !checkIn;
-        if (checkIn) {
-             $('#check-button').text('Check In');
-             $('#route-pick-modal').openModal();
-        } else {
-            $('#check-button').text('Check Out');
+    routeContainer.addClass('collection');
 
-        }
-        // clickHandler(checkIn);
+    transitRoutes.forEach(function(route) {
+      var collectionItem = $('<a>').addClass('collection-item').text(route.instructions);
+      routeContainer.append(collectionItem);
     });
-    checkButton = checkButton[0];
+
+    modalContent.append(routeContainer);
+    modal.append(modalContent);
+    var modalFooter = $('<div>').addClass('modal-footer');
+    var closeButton = $('<a>').addClass('waves-effect').addClass('waves-red').addClass('btn-flat').text('Cancel');
+    closeButton.click(function(){
+      button.text(CHECK_IN_TEXT);
+      modal.closeModal();
+      modal.remove();
+    });
+    modalFooter.append(closeButton);
+    modal.append(modalFooter);
+    return modal;
+}
+
+function initMap() {
+
+    directionsService = new google.maps.DirectionsService;
+    stepDisplay = new google.maps.InfoWindow;
+    geocoder = new google.maps.Geocoder();
+    console.log('in init function');
+
 
     // Setup map based on current positon
     navigator.geolocation.getCurrentPosition(function(position) {
@@ -112,9 +101,16 @@ function initMap() {
         searchBox = new google.maps.places.SearchBox(input);
         map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
 
-        // makeRoutePicker(transitRoutes);
-        //create check in and out button
-        // var checkButton = makeCheckInOutButton();
+        // create check in and out button
+        var checkButton = makeCheckInOutButton(function(checkIn) {
+          if(checkIn) {
+            var routePicker = makeRoutePicker(transitRoutes, $(checkButton));
+            $('body').append(routePicker);
+            $('#route-pick-modal').openModal();
+          } else {
+            console.log('woo!');
+          }
+        });
         checkButton.index = 3;
         map.controls[google.maps.ControlPosition.TOP_RIGHT].push(checkButton);
 
@@ -181,7 +177,6 @@ function calculateAndDisplayRoute(destination) {
                 transitRoutes.push(step);
               }
             });
-            console.log(transitRoutes);
 
         } else {
             window.alert('Directions request failed due to ' + status);
