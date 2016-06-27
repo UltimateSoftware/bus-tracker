@@ -4,6 +4,7 @@ var directionsService,
     stepDisplay,
     directionsDisplay,
     markerArray = [],
+    peopleArray = [],
     map,
     geocoder,
     searchBox,
@@ -126,11 +127,14 @@ function initMap() {
             map: map,
             position: myPosition
         });
-    }, function (err) {
+    }, function(err) {
         console.log("Position error - ", err);
     }, {
         timeout: 5000
     });
+
+    // subscribe to other peoples positions
+    global.socket.on('pushLocations', updatePeoplesPostions);
 }
 
 function selectPlace() {
@@ -164,7 +168,7 @@ function calculateAndDisplayRoute(destination) {
             document.getElementById('warnings-panel').innerHTML = '<b>' + response.routes[0].warnings + '</b>';
             directionsDisplay.setDirections(response);
             console.log(response);
-            showSteps(response, markerArray, stepDisplay, map);
+            showSteps(response, markerArray);
 
             var steps;
             response.routes.forEach((route) => {
@@ -184,7 +188,7 @@ function calculateAndDisplayRoute(destination) {
     });
 }
 
-function showSteps(directionResult, markerArray, stepDisplay, map) {
+function showSteps(directionResult) {
 
     // For each step, place a marker, and add the text to the marker's infowindow.
     // Also attach the marker to an array so we can keep track of it and remove it
@@ -194,12 +198,11 @@ function showSteps(directionResult, markerArray, stepDisplay, map) {
         var marker = markerArray[i] = markerArray[i] || new google.maps.Marker;
         marker.setMap(map);
         marker.setPosition(myRoute.steps[i].start_location);
-        attachInstructionText(
-            stepDisplay, marker, myRoute.steps[i].instructions, map);
+        attachInstructionText(stepDisplay, marker, myRoute.steps[i].instructions, map);
     }
 }
 
-function attachInstructionText(stepDisplay, marker, text, map) {
+function attachInstructionText(marker, text) {
 
     google.maps.event.addListener(marker, 'click', function() {
         // Open an info window when the marker is clicked on, containing the text
@@ -222,6 +225,8 @@ function checkInToBus(route) {
         position: myPosition
     });
 
+    global.socket.emit('checkin', route)
+
     // watch for position changes
     watchId = navigator.geolocation.watchPosition(updateCurrentPosition);
 }
@@ -232,13 +237,44 @@ function updateCurrentPosition(position) {
     // remove current positon marker
     myMarker.setMap(null);
 
+    global.socket.emit('updateLocation', myPosition);
+
     // create marker with appropriate color to match my preferences
     myMarker = new google.maps.Marker({
         map: map,
         position: myPosition
     });
+
+    global.socket.emit('updateLocation', myPosition);
 }
 
 function checkOutFromBus() {
     navigator.geolocation.clearWatch(watchID);
+    global.socket.emit('checkout');
+}
+
+function updatePeoplesPostions(locs) {
+    console.log(locs);
+
+    // First, remove any existing markers from the map.
+    for (var i = 0; i < peopleArray.length; i++) {
+        peopleArray[i].setMap(null);
+    }
+
+    peopleArray = [];
+
+    // Add everyones current positon
+    for (var i = 0; i < locs; i++) {
+
+        var personMarker = new google.maps.Marker({
+            map: map,
+            position: { lat: locs[i].lat, lng: locs[i].lng },
+            title: locs[i].route,
+            icon: "http://maps.google.com/mapfiles/ms/icons/purple-dot.png"
+        });
+
+        attachInstructionText(personMarker, "BUS: " + locs[i].route)
+
+        peopleArray[i].setMap(personMarker);
+    }
 }
