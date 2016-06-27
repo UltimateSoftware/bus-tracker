@@ -5,15 +5,14 @@ var directionsService,
     directionsDisplay,
     markerArray = [],
     peopleArray = [],
+    destinationRoutes = [],
     map,
     geocoder,
     searchBox,
     myPosition,
     myMarker,
     watchId;
-    // transitRoutes = [];
-
-
+// transitRoutes = [];
 
 function CheckInOutButton(clickHandler) {
 
@@ -35,12 +34,12 @@ function CheckInOutButton(clickHandler) {
 CheckInOutButton.prototype.CHECK_IN_TEXT = 'Check In';
 CheckInOutButton.prototype.CHECK_OUT_TEXT = 'Check Out';
 CheckInOutButton.prototype.setState = function(checkIn) {
-  this.checkIn = checkIn;
-  if (this.checkIn) {
-      this.button.text(CheckInOutButton.prototype.CHECK_OUT_TEXT);
-  } else {
-      this.button.text(CheckInOutButton.prototype.CHECK_IN_TEXT);
-  }
+    this.checkIn = checkIn;
+    if (this.checkIn) {
+        this.button.text(CheckInOutButton.prototype.CHECK_OUT_TEXT);
+    } else {
+        this.button.text(CheckInOutButton.prototype.CHECK_IN_TEXT);
+    }
 }
 
 function makeRoutePicker(busRoutes, button) {
@@ -59,16 +58,16 @@ function makeRoutePicker(busRoutes, button) {
     // var selectDropdown = $('<select>').addClass('browser-default');
 
     busRoutes.forEach(function(route) {
-      var collectionItem = $('<a>').addClass('collection-item').text(route);
+        var collectionItem = $('<a>').addClass('collection-item').text(route);
 
-      collectionItem.click(function(){
-        checkInToBus(route, button);
-      });
+        collectionItem.click(function() {
+            checkInToBus(route, button);
+        });
 
-      routeContainer.append(collectionItem);
+        routeContainer.append(collectionItem);
 
-      // var routeOption = $('<option>').attr('value', route).text(route);
-      // selectDropdown.append(routeOption);
+        // var routeOption = $('<option>').attr('value', route).text(route);
+        // selectDropdown.append(routeOption);
 
     });
 
@@ -109,7 +108,10 @@ function initMap() {
 
         // the geolocation coords do not match the object spec expected by api calls
         // this constructs the type expected
-        myPosition = { lat: position.coords.latitude, lng: position.coords.longitude };
+        myPosition = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
+        };
 
         // build map and center on current position
         map = new google.maps.Map(document.getElementById('map'), {
@@ -118,7 +120,9 @@ function initMap() {
         });
 
         //enable direction layer
-        directionsDisplay = new google.maps.DirectionsRenderer({ map: map });
+        directionsDisplay = new google.maps.DirectionsRenderer({
+            map: map
+        });
 
         // Create the search box and link it to the UI element.
         var input = document.getElementById('pac-input');
@@ -127,16 +131,16 @@ function initMap() {
 
         // create check in and out button
         var checkButton = new CheckInOutButton(
-          function(checkIn) {
-            if(checkIn) {
-              var routePicker = makeRoutePicker(busRoutes, checkButton);
-              $('body').append(routePicker);
-              $('#route-pick-modal').openModal();
-            } else {
-              console.log('woo!');
-              checkOutFromBus(watchId);
-            }
-        });
+            function(checkIn) {
+                if (checkIn) {
+                    var routePicker = makeRoutePicker(busRoutes, checkButton);
+                    $('body').append(routePicker);
+                    $('#route-pick-modal').openModal();
+                } else {
+                    console.log('woo!');
+                    checkOutFromBus(watchId);
+                }
+            });
         var buttonElement = checkButton.button[0];
         buttonElement.index = 3;
         map.controls[google.maps.ControlPosition.TOP_RIGHT].push(buttonElement);
@@ -194,6 +198,7 @@ function calculateAndDisplayRoute(destination) {
             document.getElementById('warnings-panel').innerHTML = '<b>' + response.routes[0].warnings + '</b>';
             directionsDisplay.setDirections(response);
             console.log(response);
+            destinationRoutes = response.routes;
             showSteps(response, markerArray);
             //
             // var steps;
@@ -257,51 +262,99 @@ function checkInToBus(route, button) {
 
     window.socket.emit('checkin', route)
 
-        // watch for position changes
-        watchId = navigator.geolocation.watchPosition(updateCurrentPosition);
+    // watch for position changes
+    watchId = navigator.geolocation.watchPosition(updateCurrentPosition);
+}
+
+/*
+Returns distance in meters
+*/
+function getDistanceFromLatLon(lat1,lon1,lat2,lon2) {
+  var R = 6371000; // Radius of the earth in meters
+  var dLat = deg2rad(lat2-lat1);  // deg2rad below
+  var dLon = deg2rad(lon2-lon1);
+  var a =
+    Math.sin(dLat/2) * Math.sin(dLat/2) +
+    Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
+    Math.sin(dLon/2) * Math.sin(dLon/2);
+  var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  var d = R * c; // Distance in meters
+  return d;
+}
+
+function deg2rad(deg) {
+  return deg * (Math.PI/180)
+}
+
+function updateCurrentPosition(position) {
+    myPosition = {
+        lat: position.coords.latitude,
+        lng: position.coords.longitude
+    };
+    if(destinationRoutes.length > 1) {
+      console.log('DAMMIT');
+    } else { //distance logic here
+      console.log('DESTINATION ROUTES', destinationRoutes);
+      var route = destinationRoutes[0];
+      var minDistance = undefined;
+      route.legs.forEach(function(leg) {
+        leg.steps.forEach(function(step) {
+          if(step.travel_mode === 'TRANSIT') {
+            step.path.forEach(function(point) {
+              var lat = point.lat();
+              var lng = point.lng();
+              var distance = getDistanceFromLatLon(lat, lng, myPosition.lat, myPosition.lng);
+              if(minDistance === undefined || distance < minDistance) {
+                minDistance = distance;
+              }
+            });
+          } else {
+            console.log('WALKING');
+          }
+        });
+      });
+    }
+    // remove current positon marker
+    myMarker.setMap(null);
+
+    // create marker with appropriate color to match my preferences
+    myMarker = new google.maps.Marker({
+        map: map,
+        position: myPosition
+    });
+
+    window.socket.emit('updateLocation', myPosition);
+}
+
+function checkOutFromBus(watchId) {
+    navigator.geolocation.clearWatch(watchId);
+    window.socket.emit('checkout');
+}
+
+function updatePeoplesPostions(locs) {
+    console.log(locs);
+
+    // First, remove any existing markers from the map.
+    for (var i = 0; i < peopleArray.length; i++) {
+        peopleArray[i].setMap(null);
     }
 
-    function updateCurrentPosition(position) {
-        myPosition = { lat: position.coords.latitude, lng: position.coords.longitude };
+    peopleArray = [];
 
-        // remove current positon marker
-        myMarker.setMap(null);
+    // Add everyones current positon
+    for (var i = 0; i < locs.length; i++) {
 
-        // create marker with appropriate color to match my preferences
-        myMarker = new google.maps.Marker({
+        var personMarker = new google.maps.Marker({
             map: map,
-            position: myPosition
+            position: {
+                lat: locs[i].lat,
+                lng: locs[i].lng
+            },
+            title: locs[i].route,
+            icon: "http://maps.google.com/mapfiles/ms/icons/purple-dot.png"
         });
 
-        window.socket.emit('updateLocation', myPosition);
+        attachInstructionText(personMarker, "BUS: " + locs[i].route)
+        peopleArray[i] = personMarker;
     }
-
-    function checkOutFromBus(watchId) {
-        navigator.geolocation.clearWatch(watchId);
-        window.socket.emit('checkout');
-    }
-
-    function updatePeoplesPostions(locs) {
-        console.log(locs);
-
-        // First, remove any existing markers from the map.
-        for (var i = 0; i < peopleArray.length; i++) {
-            peopleArray[i].setMap(null);
-        }
-
-        peopleArray = [];
-
-        // Add everyones current positon
-        for (var i = 0; i < locs.length; i++) {
-
-            var personMarker = new google.maps.Marker({
-                map: map,
-                position: { lat: locs[i].lat, lng: locs[i].lng },
-                title: locs[i].route,
-                icon: "http://maps.google.com/mapfiles/ms/icons/purple-dot.png"
-            });
-
-            attachInstructionText(personMarker, "BUS: " + locs[i].route)
-            peopleArray[i] = personMarker;
-        }
-    }
+}
