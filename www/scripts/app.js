@@ -241,7 +241,9 @@ function checkInToBus(route, button) {
 
     console.log('CHECKING IN BUS WOOOO');
     // change state of button to checked in
-    button.setState(false);
+    button.setState(true);
+    $('#route-pick-modal').closeModal();
+    $('#route-pick-modal').remove();
 
     // remove current positon marker
     myMarker.setMap(null);
@@ -252,7 +254,7 @@ function checkInToBus(route, button) {
         position: myPosition
     });
 
-    window.socket.emit('checkin ', route)
+    window.socket.emit('checkin', route)
 
         // watch for position changes
         watchId = navigator.geolocation.watchPosition(updateCurrentPosition);
