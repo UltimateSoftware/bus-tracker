@@ -33,6 +33,9 @@ function makeCheckInOutButton(clickHandler) {
         } else {
             button.text(CHECK_IN_TEXT);
         }
+
+        checkInToBus('ROute 23');
+
         clickHandler(checkIn);
         checkIn = !checkIn;
     });
@@ -134,7 +137,7 @@ function initMap() {
     });
 
     // subscribe to other peoples positions
-    global.socket.on('pushLocations', updatePeoplesPostions);
+    window.socket.on('pushLocations', updatePeoplesPostions);
 }
 
 function selectPlace() {
@@ -225,7 +228,7 @@ function checkInToBus(route) {
         position: myPosition
     });
 
-    global.socket.emit('checkin', route)
+    window.socket.emit('checkin', route)
 
     // watch for position changes
     watchId = navigator.geolocation.watchPosition(updateCurrentPosition);
@@ -237,20 +240,18 @@ function updateCurrentPosition(position) {
     // remove current positon marker
     myMarker.setMap(null);
 
-    global.socket.emit('updateLocation', myPosition);
-
     // create marker with appropriate color to match my preferences
     myMarker = new google.maps.Marker({
         map: map,
         position: myPosition
     });
 
-    global.socket.emit('updateLocation', myPosition);
+    window.socket.emit('updateLocation', myPosition);
 }
 
 function checkOutFromBus() {
     navigator.geolocation.clearWatch(watchID);
-    global.socket.emit('checkout');
+    window.socket.emit('checkout');
 }
 
 function updatePeoplesPostions(locs) {
@@ -264,7 +265,7 @@ function updatePeoplesPostions(locs) {
     peopleArray = [];
 
     // Add everyones current positon
-    for (var i = 0; i < locs; i++) {
+    for (var i = 0; i < locs.length; i++) {
 
         var personMarker = new google.maps.Marker({
             map: map,
@@ -274,7 +275,6 @@ function updatePeoplesPostions(locs) {
         });
 
         attachInstructionText(personMarker, "BUS: " + locs[i].route)
-
-        peopleArray[i].setMap(personMarker);
+        peopleArray[i] = personMarker;
     }
 }
