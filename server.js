@@ -7,7 +7,7 @@ const app = express();
 const Server = require('socket.io');
 
 
-const SOCKET_PORT = 8888;
+const SOCKET_PORT = 2223;
 const PORT = 5000;
 const PATHS = {
     app: path.join(__dirname, 'www')
