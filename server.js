@@ -7,7 +7,7 @@ const Server = require('socket.io');
 
 
 const SOCKET_PORT = 8888;
-const PORT = 1337;
+const PORT = 5000;
 const PATHS = {
     app: path.join(__dirname, 'www')
 };
@@ -44,7 +44,7 @@ io.on('connection', (socket) => {
     socket.on('checkin', (route) => {
         console.log('CHECKIN RECEIVED');
 
-        const con = findConnection(socket.id);       
+        const con = findConnection(socket.id);
         con.route = route;
         con.checkedIn = true;
     });
