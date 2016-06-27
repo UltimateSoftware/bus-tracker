@@ -20,6 +20,7 @@
   "homepage": "https://github.com/UltimateSoftware/bus-tracker#readme",
   "dependencies": {
     "cordova-plugin-mauron85-background-geolocation": "^2.1.2",
+    "cors": "^2.7.1",
     "express": "^4.14.0",
     "socket.io": "^1.4.8"
   },

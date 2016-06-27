@@ -1,4 +1,5 @@
 const path = require('path');
+const cors = require('cors');
 
 const express = require('express');
 const app = express();
@@ -15,6 +16,7 @@ const PATHS = {
 var connections = [];
 
 app.use(express.static(PATHS.app));
+app.use(cors());
 
 app.get('/', function response(req, res) {
     res.sendFile(path.join(PATHS.app, 'index.html'));
