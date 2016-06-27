@@ -134,6 +134,7 @@ function initMap() {
               $('#route-pick-modal').openModal();
             } else {
               console.log('woo!');
+              checkOutFromBus(watchId);
             }
         });
         var buttonElement = checkButton.button[0];
@@ -275,8 +276,8 @@ function checkInToBus(route, button) {
         window.socket.emit('updateLocation', myPosition);
     }
 
-    function checkOutFromBus() {
-        navigator.geolocation.clearWatch(watchID);
+    function checkOutFromBus(watchId) {
+        navigator.geolocation.clearWatch(watchId);
         window.socket.emit('checkout');
     }
 
