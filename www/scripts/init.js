@@ -9,7 +9,7 @@
     }
 
     function connectToServerSocket() {
-      var socket = io.connect('http://10.55.12.102:8888');
+      var socket = io.connect('https://bus-tracker.ultilabs.xyz:8888');
       
 
       global.socket = socket;
@@ -24,7 +24,7 @@
     }
 
     function loadMapsApi() {
-        if ((false && navigator.connection.type === Connection.NONE) || global.google !== undefined) {
+        if ((window.cordova && navigator.connection.type === Connection.NONE) || global.google !== undefined) {
             return;
         }
 
