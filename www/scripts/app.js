@@ -17,7 +17,9 @@ var directionsService,
 function CheckInOutButton(clickHandler) {
 
     this.button = $('<div>');
-    this.button.addClass('waves-effect').addClass('waves-light').addClass('btn').addClass('modal-trigger');
+    this.button.addClass('waves-effect').addClass('waves-light').addClass('btn-large').addClass('btn-floating').addClass('modal-trigger');
+    this.buttonIcon = $('<i>').addClass('fa');
+    this.button.append(this.buttonIcon);
     this.button.attr('href', 'route-pick-modal');
     this.button.css({
         margin: '10px'
@@ -33,12 +35,19 @@ function CheckInOutButton(clickHandler) {
 
 CheckInOutButton.prototype.CHECK_IN_TEXT = 'Check In';
 CheckInOutButton.prototype.CHECK_OUT_TEXT = 'Check Out';
+CheckInOutButton.prototype.CHECK_IN_ICON = 'fa-check';
+CheckInOutButton.prototype.CHECK_OUT_ICON = 'fa-times';
 CheckInOutButton.prototype.setState = function(checkIn) {
     this.checkIn = checkIn;
     if (this.checkIn) {
-        this.button.text(CheckInOutButton.prototype.CHECK_OUT_TEXT);
+        // this.button.text(CheckInOutButton.prototype.CHECK_OUT_TEXT);
+        this.button.addClass('red').removeClass('green');
+        this.buttonIcon.addClass(CheckInOutButton.prototype.CHECK_OUT_ICON).removeClass(CheckInOutButton.prototype.CHECK_IN_ICON);
     } else {
-        this.button.text(CheckInOutButton.prototype.CHECK_IN_TEXT);
+        // this.button.text(CheckInOutButton.prototype.CHECK_IN_TEXT);
+        this.button.addClass('green').removeClass('red');
+        this.buttonIcon.addClass(CheckInOutButton.prototype.CHECK_IN_ICON).removeClass(CheckInOutButton.prototype.CHECK_OUT_ICON);
+
     }
 }
 
@@ -73,7 +82,6 @@ function makeRoutePicker(busRoutes, button) {
 
     // selectDropdown.select2();
     // routeContainer.append(selectDropdown);
-
 
     modalContent.append(routeContainer);
     modal.append(modalContent);
@@ -116,7 +124,8 @@ function initMap() {
         // build map and center on current position
         map = new google.maps.Map(document.getElementById('map'), {
             zoom: 13,
-            center: myPosition
+            center: myPosition,
+            disableDefaultUI: true
         });
 
         //enable direction layer
@@ -143,7 +152,7 @@ function initMap() {
             });
         var buttonElement = checkButton.button[0];
         buttonElement.index = 3;
-        map.controls[google.maps.ControlPosition.TOP_RIGHT].push(buttonElement);
+        map.controls[google.maps.ControlPosition.BOTTOM_RIGHT].push(buttonElement);
 
         // Bias the SearchBox results towards current map's viewport.
         map.addListener('bounds_changed', function() {
