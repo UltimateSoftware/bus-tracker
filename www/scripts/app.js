@@ -14,94 +14,6 @@ var directionsService,
     watchId;
 // transitRoutes = [];
 
-function CheckInOutButton(clickHandler) {
-
-    this.button = $('<div>');
-    this.button.addClass('waves-effect').addClass('waves-light').addClass('btn-large').addClass('btn-floating').addClass('modal-trigger');
-    this.buttonIcon = $('<i>').addClass('fa');
-    this.button.append(this.buttonIcon);
-    this.button.attr('href', 'route-pick-modal');
-    this.button.css({
-        margin: '10px'
-    });
-    this.setState(false);
-    var self = this;
-    this.button.click(function() {
-        self.setState(!self.checkIn);
-        clickHandler(self.checkIn);
-    });
-
-}
-
-CheckInOutButton.prototype.CHECK_IN_TEXT = 'Check In';
-CheckInOutButton.prototype.CHECK_OUT_TEXT = 'Check Out';
-CheckInOutButton.prototype.CHECK_IN_ICON = 'fa-check';
-CheckInOutButton.prototype.CHECK_OUT_ICON = 'fa-times';
-CheckInOutButton.prototype.setState = function(checkIn) {
-    this.checkIn = checkIn;
-    if (this.checkIn) {
-        // this.button.text(CheckInOutButton.prototype.CHECK_OUT_TEXT);
-        this.button.addClass('red').removeClass('green');
-        this.buttonIcon.addClass(CheckInOutButton.prototype.CHECK_OUT_ICON).removeClass(CheckInOutButton.prototype.CHECK_IN_ICON);
-    } else {
-        // this.button.text(CheckInOutButton.prototype.CHECK_IN_TEXT);
-        this.button.addClass('green').removeClass('red');
-        this.buttonIcon.addClass(CheckInOutButton.prototype.CHECK_IN_ICON).removeClass(CheckInOutButton.prototype.CHECK_OUT_ICON);
-
-    }
-}
-
-function makeRoutePicker(busRoutes, button) {
-
-    var modal = $('<div>');
-    modal.addClass('modal').attr('id', 'route-pick-modal');
-
-    var modalContent = $('<div>');
-    modalContent.addClass('modal-content');
-    modalContent.append($('<h4>').text('Pick Your Route'));
-    var routeContainer = $('<div>');
-
-    // routeContainer.addClass('input-field');
-    routeContainer.addClass('collection');
-
-    // var selectDropdown = $('<select>').addClass('browser-default');
-
-    busRoutes.forEach(function(route) {
-        var collectionItem = $('<a>').addClass('collection-item').text(route);
-
-        collectionItem.click(function() {
-            checkInToBus(route, button);
-        });
-
-        routeContainer.append(collectionItem);
-
-        // var routeOption = $('<option>').attr('value', route).text(route);
-        // selectDropdown.append(routeOption);
-
-    });
-
-    // selectDropdown.select2();
-    // routeContainer.append(selectDropdown);
-
-    modalContent.append(routeContainer);
-    modal.append(modalContent);
-    var modalFooter = $('<div>').addClass('modal-footer');
-    var closeButton = $('<a>').addClass('waves-effect').addClass('waves-red').addClass('btn-flat').text('Cancel');
-    closeButton.click(function() {
-        button.setState(false);
-        modal.closeModal();
-        modal.remove();
-    });
-    modalFooter.append(closeButton);
-    modal.append(modalFooter);
-
-    $(document).on('click', '.lean-overlay', function() {
-        button.setState(false);
-    });
-
-    return modal;
-}
-
 function initMap() {
 
     directionsService = new google.maps.DirectionsService;
@@ -173,7 +85,7 @@ function initMap() {
     });
 
     // subscribe to other peoples positions
-    window.socket.on('pushLocations', updatePeoplesPostions);
+    window.socket.on('pushLocations', updatePeoplesPositions);
 }
 
 function selectPlace() {
@@ -185,54 +97,6 @@ function selectPlace() {
     }
 
     calculateAndDisplayRoute(places[0].formatted_address)
-}
-
-function alertModal(title, content, type) {
-
-    var iconColor = '';
-    var iconClass = '';
-
-    if (type === 'warning') {
-        iconColor = '#ffb300';
-        iconClass = 'fa-exclamation-triangle';
-    } else if (type === 'error') {
-        iconColor = '#e53935';
-        iconClass = 'fa-times-circle';
-    } else if (type === 'success') {
-        iconColor = '#00e676';
-        iconClass = 'fa-check-circle';
-    } else {
-        iconColor = '#f50057';
-        iconClass = 'fa-smile-o';
-    }
-    var modal = $('<div>');
-    modal.addClass('modal');
-
-    var modalContent = $('<div>');
-    modalContent.addClass('modal-content');
-    var iconArea = $('<div>').addClass('icon-area');
-    iconArea.append($('<span>').addClass('fa').addClass(iconClass));
-    iconArea.css({
-        textAlign: 'center',
-        padding: '10px',
-        fontSize: '75px',
-        color: iconColor
-    });
-    modalContent.append(iconArea);
-    modalContent.append($('<h4>').text(title));
-    modalContent.append($('<p>').text(content));
-
-    modal.append(modalContent);
-    var modalFooter = $('<div>').addClass('modal-footer');
-    var closeButton = $('<a>').addClass('waves-effect').addClass('waves-red').addClass('btn-flat').text('OK');
-    closeButton.click(function() {
-        modal.closeModal();
-        modal.remove();
-    });
-    modalFooter.append(closeButton);
-    modal.append(modalFooter);
-    $('body').append(modal);
-    modal.openModal();
 }
 
 function calculateAndDisplayRoute(destination) {
@@ -257,7 +121,7 @@ function calculateAndDisplayRoute(destination) {
             console.log(response);
             destinationRoutes = response.routes;
             showSteps(response, markerArray);
-            //
+
             // var steps;
             // response.routes.forEach((route) => {
             //    route.legs.forEach((leg) => {
@@ -277,7 +141,6 @@ function calculateAndDisplayRoute(destination) {
 }
 
 function showSteps(directionResult) {
-
     // For each step, place a marker, and add the text to the marker's infowindow.
     // Also attach the marker to an array so we can keep track of it and remove it
     // when calculating new routes.
@@ -291,176 +154,10 @@ function showSteps(directionResult) {
 }
 
 function attachInstructionText(marker, text) {
-
     google.maps.event.addListener(marker, 'click', function() {
         // Open an info window when the marker is clicked on, containing the text
         // of the step.
         stepDisplay.setContent(text);
         stepDisplay.open(map, marker);
     });
-}
-
-function checkInToBus(route, button) {
-    console.log('CHECKING IN BUS WOOOO');
-    // change state of button to checked in
-    button.setState(true);
-    $('#route-pick-modal').closeModal();
-    $('#route-pick-modal').remove();
-
-    // remove current positon marker
-    myMarker.setMap(null);
-
-    // create marker with appropriate color to match my preferences
-    myMarker = new google.maps.Marker({
-        map: map,
-        position: myPosition
-    });
-
-    window.socket.emit('checkin', route)
-
-    // watch for position changes
-    watchId = navigator.geolocation.watchPosition(updateCurrentPosition);
-}
-
-function updateCurrentPosition(position) {
-    myPosition = { lat: position.coords.latitude, lng: position.coords.longitude };
-
-    // remove current positon marker
-    myMarker.setMap(null);
-
-    // create marker with appropriate color to match my preferences
-    myMarker = new google.maps.Marker({
-        map: map,
-        position: myPosition
-    });
-
-    window.socket.emit('updateLocation', myPosition);
-}
-
-function checkOutFromBus(watchId) {
-    navigator.geolocation.clearWatch(watchId);
-    window.socket.emit('checkout');
-}
-
-  function updatePeoplesPostions(locs) {
-      console.log(locs);
-
-      // First, remove any existing markers from the map.
-      for (var i = 0; i < peopleArray.length; i++) {
-          peopleArray[i].setMap(null);
-      }
-
-      peopleArray = [];
-
-      // Add everyones current positon
-      for (var i = 0; i < locs.length; i++) {
-
-          var personMarker = new google.maps.Marker({
-              map: map,
-              position: { lat: locs[i].lat, lng: locs[i].lng },
-              title: locs[i].route,
-              icon: "http://maps.google.com/mapfiles/ms/icons/purple-dot.png"
-          });
-
-          attachInstructionText(personMarker, "BUS: " + locs[i].route)
-          peopleArray[i] = personMarker;
-      }
-}
-
-
-/*
-Returns distance in meters
-*/
-function getDistanceFromLatLon(lat1, lon1, lat2, lon2) {
-    var R = 6371000; // Radius of the earth in meters
-    var dLat = deg2rad(lat2 - lat1); // deg2rad below
-    var dLon = deg2rad(lon2 - lon1);
-    var a =
-        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-        Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
-        Math.sin(dLon / 2) * Math.sin(dLon / 2);
-    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    var d = R * c; // Distance in meters
-    return d;
-}
-
-function deg2rad(deg) {
-    return deg * (Math.PI / 180)
-}
-
-function updateCurrentPosition(position) {
-    myPosition = {
-        lat: position.coords.latitude,
-        lng: position.coords.longitude
-    };
-    if (destinationRoutes.length > 1) {
-        console.log('DAMMIT');
-    } else { //distance logic here
-        console.log('DESTINATION ROUTES', destinationRoutes);
-        var route = destinationRoutes[0];
-        var minDistance = undefined;
-        route.legs.forEach(function(leg) {
-            leg.steps.forEach(function(step) {
-                if (step.travel_mode === 'TRANSIT') {
-                    step.path.forEach(function(point) {
-                        var lat = point.lat();
-                        var lng = point.lng();
-                        var distance = getDistanceFromLatLon(lat, lng, myPosition.lat, myPosition.lng);
-                        if (minDistance === undefined || distance < minDistance) {
-                            minDistance = distance;
-                        }
-                    });
-                } else {
-                    console.log('WALKING');
-                }
-            });
-        });
-        if (minDistance > 100) {
-            alertModal('Path Error!', 'You\'re off your path, do you need to check out?', 'error');
-            if(window.cordova) window.backgroundGeolocation.stop();
-        }
-    }
-    // remove current positon marker
-    myMarker.setMap(null);
-
-    // create marker with appropriate color to match my preferences
-    myMarker = new google.maps.Marker({
-        map: map,
-        position: myPosition
-    });
-
-    window.socket.emit('updateLocation', myPosition);
-}
-
-function checkOutFromBus(watchId) {
-    navigator.geolocation.clearWatch(watchId);
-    window.socket.emit('checkout');
-}
-
-function updatePeoplesPostions(locs) {
-    console.log(locs);
-
-    // First, remove any existing markers from the map.
-    for (var i = 0; i < peopleArray.length; i++) {
-        peopleArray[i].setMap(null);
-    }
-
-    peopleArray = [];
-
-    // Add everyones current positon
-    for (var i = 0; i < locs.length; i++) {
-
-        var personMarker = new google.maps.Marker({
-            map: map,
-            position: {
-                lat: locs[i].lat,
-                lng: locs[i].lng
-            },
-            title: locs[i].route,
-            icon: "http://maps.google.com/mapfiles/ms/icons/purple-dot.png"
-        });
-
-        attachInstructionText(personMarker, "BUS: " + locs[i].route)
-        peopleArray[i] = personMarker;
-    }
 }

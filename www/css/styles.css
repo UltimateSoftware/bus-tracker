@@ -47,3 +47,9 @@ html, body {
 #target {
     width: 345px;
 }
+#check-button {
+  margin: 10px;
+  position: absolute !important;
+  right: 20px !important;
+  bottom: 20px !important;
+}

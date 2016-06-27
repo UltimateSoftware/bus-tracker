@@ -88,6 +88,3 @@
     }
     document.addEventListener("deviceready", onDeviceReady, false);
 })(window);
-
-
-document.addEventListener('deviceready', onDeviceReady, false);
