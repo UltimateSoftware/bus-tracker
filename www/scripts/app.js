@@ -13,6 +13,8 @@ var directionsService,
     watchId,
     transitRoutes = [];
 
+
+
 function CheckInOutButton(clickHandler) {
 
   this.button = $('<div>');
@@ -40,28 +42,6 @@ CheckInOutButton.prototype.setState = function(checkIn) {
       this.button.text(CheckInOutButton.prototype.CHECK_IN_TEXT);
   }
 }
-
-// function makeCheckInOutButton(clickHandler) {
-//     var button = $('<div>');
-//     button.addClass('waves-effect').addClass('waves-light').addClass('btn').addClass('modal-trigger');
-//     button.attr('href', 'route-pick-modal');
-//     button.css({
-//         margin: '10px'
-//     });
-//     button.text(CHECK_IN_TEXT);
-//     var checkIn = true; //CheckIn means you're about to check in
-//     button.click(function () {
-//         if (checkIn) {
-//             button.text(CHECK_OUT_TEXT);
-//         } else {
-//             button.text(CHECK_IN_TEXT);
-//         }
-//         clickHandler(checkIn);
-//         checkIn = !checkIn;
-//     });
-//     return button[0];
-// }
-
 
 function makeRoutePicker(transitRoutes, button) {
     console.log(transitRoutes);
@@ -93,8 +73,7 @@ function makeRoutePicker(transitRoutes, button) {
     modalFooter.append(closeButton);
     modal.append(modalFooter);
 
-    $('.lean-overlay').on('click', function(){
-      console.log('CLICKED ON OVERLAY');
+    $(document).on('click', '.lean-overlay', function(){
       button.setState(false);
     });
 
