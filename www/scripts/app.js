@@ -178,8 +178,55 @@ function selectPlace() {
     calculateAndDisplayRoute(places[0].formatted_address)
 }
 
-function calculateAndDisplayRoute(destination) {
+function alertModal(title, content, type) {
 
+    var iconColor = '';
+    var iconClass = '';
+
+    if (type === 'warning') {
+        iconColor = '#ffb300';
+        iconClass = 'fa-exclamation-triangle';
+    } else if (type === 'error') {
+        iconColor = '#e53935';
+        iconClass = 'fa-times-circle';
+    } else if (type === 'success') {
+        iconColor = '#00e676';
+        iconClass = 'fa-check-circle';
+    } else {
+        iconColor = '#f50057';
+        iconClass = 'fa-smile-o';
+    }
+    var modal = $('<div>');
+    modal.addClass('modal');
+
+    var modalContent = $('<div>');
+    modalContent.addClass('modal-content');
+    var iconArea = $('<div>').addClass('icon-area');
+    iconArea.append($('<span>').addClass('fa').addClass(iconClass));
+    iconArea.css({
+        textAlign: 'center',
+        padding: '10px',
+        fontSize: '75px',
+        color: iconColor
+    });
+    modalContent.append(iconArea);
+    modalContent.append($('<h4>').text(title));
+    modalContent.append($('<p>').text(content));
+
+    modal.append(modalContent);
+    var modalFooter = $('<div>').addClass('modal-footer');
+    var closeButton = $('<a>').addClass('waves-effect').addClass('waves-red').addClass('btn-flat').text('OK');
+    closeButton.click(function() {
+        modal.closeModal();
+        modal.remove();
+    });
+    modalFooter.append(closeButton);
+    modal.append(modalFooter);
+    $('body').append(modal);
+    modal.openModal();
+}
+
+function calculateAndDisplayRoute(destination) {
     // First, remove any existing markers from the map.
     for (var i = 0; i < markerArray.length; i++) {
         markerArray[i].setMap(null);
@@ -195,7 +242,8 @@ function calculateAndDisplayRoute(destination) {
         // Route the directions and pass the response to a function to create
         // markers for each step.
         if (status === google.maps.DirectionsStatus.OK) {
-            document.getElementById('warnings-panel').innerHTML = '<b>' + response.routes[0].warnings + '</b>';
+            alertModal('', response.routes[0].warnings, 'warning');
+
             directionsDisplay.setDirections(response);
             console.log(response);
             destinationRoutes = response.routes;
@@ -362,21 +410,21 @@ function onDeviceReady () {
 /*
 Returns distance in meters
 */
-function getDistanceFromLatLon(lat1,lon1,lat2,lon2) {
-  var R = 6371000; // Radius of the earth in meters
-  var dLat = deg2rad(lat2-lat1);  // deg2rad below
-  var dLon = deg2rad(lon2-lon1);
-  var a =
-    Math.sin(dLat/2) * Math.sin(dLat/2) +
-    Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
-    Math.sin(dLon/2) * Math.sin(dLon/2);
-  var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-  var d = R * c; // Distance in meters
-  return d;
+function getDistanceFromLatLon(lat1, lon1, lat2, lon2) {
+    var R = 6371000; // Radius of the earth in meters
+    var dLat = deg2rad(lat2 - lat1); // deg2rad below
+    var dLon = deg2rad(lon2 - lon1);
+    var a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
+        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    var d = R * c; // Distance in meters
+    return d;
 }
 
 function deg2rad(deg) {
-  return deg * (Math.PI/180)
+    return deg * (Math.PI / 180)
 }
 
 function updateCurrentPosition(position) {
@@ -384,28 +432,31 @@ function updateCurrentPosition(position) {
         lat: position.coords.latitude,
         lng: position.coords.longitude
     };
-    if(destinationRoutes.length > 1) {
-      console.log('DAMMIT');
+    if (destinationRoutes.length > 1) {
+        console.log('DAMMIT');
     } else { //distance logic here
-      console.log('DESTINATION ROUTES', destinationRoutes);
-      var route = destinationRoutes[0];
-      var minDistance = undefined;
-      route.legs.forEach(function(leg) {
-        leg.steps.forEach(function(step) {
-          if(step.travel_mode === 'TRANSIT') {
-            step.path.forEach(function(point) {
-              var lat = point.lat();
-              var lng = point.lng();
-              var distance = getDistanceFromLatLon(lat, lng, myPosition.lat, myPosition.lng);
-              if(minDistance === undefined || distance < minDistance) {
-                minDistance = distance;
-              }
+        console.log('DESTINATION ROUTES', destinationRoutes);
+        var route = destinationRoutes[0];
+        var minDistance = undefined;
+        route.legs.forEach(function(leg) {
+            leg.steps.forEach(function(step) {
+                if (step.travel_mode === 'TRANSIT') {
+                    step.path.forEach(function(point) {
+                        var lat = point.lat();
+                        var lng = point.lng();
+                        var distance = getDistanceFromLatLon(lat, lng, myPosition.lat, myPosition.lng);
+                        if (minDistance === undefined || distance < minDistance) {
+                            minDistance = distance;
+                        }
+                    });
+                } else {
+                    console.log('WALKING');
+                }
             });
-          } else {
-            console.log('WALKING');
-          }
         });
-      });
+        if (minDistance > 100) {
+            alertModal('Path Error!', 'You\'re off your path, do you need to check out?', 'error');
+        }
     }
     // remove current positon marker
     myMarker.setMap(null);
