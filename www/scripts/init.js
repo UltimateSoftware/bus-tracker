@@ -54,7 +54,7 @@
     }
 
     function connectToServerSocket() {
-      var socket = io.connect('https://bus-tracker.ultilabs.xyz:8888');
+      var socket = io.connect('http://bus-tracker.ultilabs.xyz:8888');
       // var socket = io.connect('http://localhost:8888');
 
 
