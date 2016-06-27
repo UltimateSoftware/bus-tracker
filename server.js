@@ -10,7 +10,7 @@ const PATHS = {
     app: path.join(__dirname, 'www')
 };
 
-const expressServer = app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
     console.log(`==> Listening on port: ${PORT}`);
     setInterval(pushLocations, 10 * 1000);
 });

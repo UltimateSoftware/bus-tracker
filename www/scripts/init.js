@@ -55,7 +55,7 @@
 
     function connectToServerSocket() {
       var socket = io.connect('//bus-tracker.ultilabs.xyz');
-      // var socket = io.connect('http://localhost:8888');
+      // var socket = io.connect('//localhost');
 
 
       global.socket = socket;
