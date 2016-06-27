@@ -43,6 +43,7 @@
         initMap();
     };
 
+    //comment out onDeviceReady when deploying - It's the Wild West, baby.
     onDeviceReady();
-    // document.addEventListener("deviceready", onDeviceReady, false);
+    document.addEventListener("deviceready", onDeviceReady, false);
 })(window);
