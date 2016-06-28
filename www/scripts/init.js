@@ -87,4 +87,4 @@
         onDeviceReady();
     }
     document.addEventListener("deviceready", onDeviceReady, false);
-}��bOk��gj�
+})(window);
