@@ -2,7 +2,6 @@
   Update Peoples Positions
 */
 function updatePeoplesPositions(locs) {
-    console.log(locs);
 
     // First, remove any existing markers from the map.
     for (var i = 0; i < peopleArray.length; i++) {

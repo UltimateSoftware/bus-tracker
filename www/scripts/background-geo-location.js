@@ -14,7 +14,7 @@ function initBackgeocoder() {
             stationaryRadius: 20,
             distanceFilter: 20,
             interval: 10 * 1000,
-            debug: true, // <-- enable this hear sounds for background-geolocation life-cycle.
+            debug: false, // <-- enable this hear sounds for background-geolocation life-cycle.
             stopOnTerminate: false // <-- enable this to clear background location settings when the app terminates
         });
     }
@@ -36,17 +36,17 @@ function updateBackground(location) {
     }
 
     updateCurrentPosition(position);
+
+    /*
+       IMPORTANT:  You must execute the finish method here to inform the native plugin that you're finished,
+       and the background-task may be completed.  You must do this regardless if your HTTP request is successful or not.
+       IF YOU DON'T, ios will CRASH YOUR APP for spending too much time in the background.
+    */
+    window.backgroundGeolocation.finish();
 }
 
 function stopBackgroundGeocoder() {
 
     // If you wish to turn OFF background-tracking, call the #stop method.
     window.backgroundGeolocation.stop();
-
-    /*
-       IMPORTANT:  You must execute the finish method here to inform the native plugin that you're finished,
-       and the background-task may be completed.  You must do this regardless if your HTTP request is successful or not.
-       IF YOU DON'T, ios will CRASH YOUR APP for spending too much time in the background.
-       */
-    window.backgroundGeolocation.finish();
 }
