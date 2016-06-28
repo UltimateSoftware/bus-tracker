@@ -6,7 +6,7 @@
         id        = "com.ultimatesoftware.bustracker"
         version   = "1.0.0">
 
-    <name>Bus Tracker</name>
+    <name>Track Your PACE</name>
 
     <description>
         Bus tracker app
@@ -45,7 +45,7 @@
     <gap:plugin name="org.apache.cordova.network-information" />
     <gap:plugin name="org.apache.cordova.splashscreen" />
 
-    <preference name="android-minSdkVersion" value="20" />
+    <preference name="android-build-tool" value="gradle" />
 
     <!-- Third party plugins -->
     <!-- A list of available plugins are available at https://build.phonegap.com/plugins -->
