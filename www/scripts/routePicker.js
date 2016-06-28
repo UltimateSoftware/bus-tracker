@@ -21,14 +21,7 @@ function makeRoutePicker(busRoutes, button) {
         });
 
         routeContainer.append(collectionItem);
-
-        // var routeOption = $('<option>').attr('value', route).text(route);
-        // selectDropdown.append(routeOption);
-
     });
-
-    // selectDropdown.select2();
-    // routeContainer.append(selectDropdown);
 
     modalContent.append(routeContainer);
     modal.append(modalContent);
@@ -69,9 +62,11 @@ function checkInToBus(route, button) {
 
     // watch for position changes
     watchId = navigator.geolocation.watchPosition(updateCurrentPosition);
+    startBackgroundGeocoder();
 }
 
 function checkOutFromBus(watchId) {
     navigator.geolocation.clearWatch(watchId);
+    stopBackgroundGeocoder();
     window.socket.emit('checkout');
 }

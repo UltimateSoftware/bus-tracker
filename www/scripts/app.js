@@ -12,7 +12,6 @@ var directionsService,
     myPosition,
     myMarker,
     watchId;
-// transitRoutes = [];
 
 function initMap() {
 
@@ -24,7 +23,6 @@ function initMap() {
 
     // Setup map based on current positon
     navigator.geolocation.getCurrentPosition(function(position) {
-        console.log("got current position - ", position);
 
         // the geolocation coords do not match the object spec expected by api calls
         // this constructs the type expected
@@ -62,6 +60,7 @@ function initMap() {
                     checkOutFromBus(watchId);
                 }
             });
+
         var buttonElement = checkButton.button[0];
         buttonElement.index = 3;
         map.controls[google.maps.ControlPosition.BOTTOM_RIGHT].push(buttonElement);
@@ -121,19 +120,6 @@ function calculateAndDisplayRoute(destination) {
             console.log(response);
             destinationRoutes = response.routes;
             showSteps(response, markerArray);
-
-            // var steps;
-            // response.routes.forEach((route) => {
-            //    route.legs.forEach((leg) => {
-            //      steps = leg.steps;
-            //    });
-            // });
-            // steps.forEach((step) => {
-            //   if(step.travel_mode === "TRANSIT") {
-            //     transitRoutes.push(step);
-            //   }
-            // });
-
         } else {
             window.alert('Directions request failed due to ' + status);
         }
