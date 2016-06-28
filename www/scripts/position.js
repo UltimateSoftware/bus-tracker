@@ -29,56 +29,10 @@ function updatePeoplesPositions(locs) {
     }
 }
 
-function updatePeoplesPositions(locs) {
-    console.log(locs);
-
-    // First, remove any existing markers from the map.
-    for (var i = 0; i < peopleArray.length; i++) {
-        peopleArray[i].setMap(null);
-    }
-
-    peopleArray = [];
-
-    // Add everyones current positon
-    for (var i = 0; i < locs.length; i++) {
-
-        var personMarker = new google.maps.Marker({
-            map: map,
-            position: {
-                lat: locs[i].lat,
-                lng: locs[i].lng
-            },
-            title: locs[i].route,
-            icon: "http://maps.google.com/mapfiles/ms/icons/purple-dot.png"
-        });
-
-        attachInstructionText(personMarker, "BUS: " + locs[i].route)
-        peopleArray[i] = personMarker;
-    }
-}
-
 
 /*
 Update Current Position
 */
-function updateCurrentPosition(position) {
-    myPosition = {
-        lat: position.coords.latitude,
-        lng: position.coords.longitude
-    };
-
-    // remove current positon marker
-    myMarker.setMap(null);
-
-    // create marker with appropriate color to match my preferences
-    myMarker = new google.maps.Marker({
-        map: map,
-        position: myPosition
-    });
-
-    window.socket.emit('updateLocation', myPosition);
-}
-
 function updateCurrentPosition(position) {
     myPosition = {
         lat: position.coords.latitude,
