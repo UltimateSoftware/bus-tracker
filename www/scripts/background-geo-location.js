@@ -41,12 +41,12 @@ function updateBackground(location) {
 function stopBackgroundGeocoder() {
 
     // If you wish to turn OFF background-tracking, call the #stop method.
-    backgroundGeolocation.stop();
+    window.backgroundGeolocation.stop();
 
     /*
        IMPORTANT:  You must execute the finish method here to inform the native plugin that you're finished,
        and the background-task may be completed.  You must do this regardless if your HTTP request is successful or not.
        IF YOU DON'T, ios will CRASH YOUR APP for spending too much time in the background.
        */
-    global.backgroundGeolocation.finish();
+    window.backgroundGeolocation.finish();
 }

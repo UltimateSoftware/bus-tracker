@@ -6,12 +6,9 @@ function makeRoutePicker(busRoutes, button) {
     var modalContent = $('<div>');
     modalContent.addClass('modal-content');
     modalContent.append($('<h4>').text('Pick Your Route'));
+    
     var routeContainer = $('<div>');
-
-    // routeContainer.addClass('input-field');
     routeContainer.addClass('collection');
-
-    // var selectDropdown = $('<select>').addClass('browser-default');
 
     busRoutes.forEach(function(route) {
         var collectionItem = $('<a>').addClass('collection-item').text(route);
@@ -43,20 +40,14 @@ function makeRoutePicker(busRoutes, button) {
 }
 
 function checkInToBus(route, button) {
-    console.log('CHECKING IN BUS WOOOO');
+
     // change state of button to checked in
     button.setState(true);
     $('#route-pick-modal').closeModal();
     $('#route-pick-modal').remove();
 
     // remove current positon marker
-    myMarker.setMap(null);
-
-    // create marker with appropriate color to match my preferences
-    myMarker = new google.maps.Marker({
-        map: map,
-        position: myPosition
-    });
+    myMarker.setMap(null);    
 
     window.socket.emit('checkin', route);
 
@@ -69,4 +60,10 @@ function checkOutFromBus(watchId) {
     navigator.geolocation.clearWatch(watchId);
     stopBackgroundGeocoder();
     window.socket.emit('checkout');
+
+    // create marker with appropriate color to match my preferences
+    myMarker = new google.maps.Marker({
+        map: map,
+        position: myPosition
+    });
 }

@@ -30,13 +30,10 @@ app.get('/', function response(req, res) {
 const io = require('socket.io')(http);
 
 io.on('connection', (socket) => {
-    console.log(`SOCKET CONNECTED: ${socket.id}`);
 
     connections.push({ _id: socket.id });
 
-
     socket.on('disconnect', () => {
-        console.log(`SOCKET DISCONNECTED: ${socket.id}`);
 
         connections = connections.filter(
             con => con._id !== socket.id
@@ -44,7 +41,6 @@ io.on('connection', (socket) => {
     });
 
     socket.on('checkin', (route) => {
-        console.log('CHECKIN RECEIVED');
 
         const con = findConnection(socket.id);
         con.route = route;
@@ -52,7 +48,6 @@ io.on('connection', (socket) => {
     });
 
     socket.on('checkout', () => {
-        console.log('CHECKOUT RECEIVED');
 
         const con = findConnection(socket.id);
         // TODO handle undefined.
@@ -61,7 +56,6 @@ io.on('connection', (socket) => {
     });
 
     socket.on('updateLocation', ({ lat, lng }) => {
-        console.log('updateLocation RECEIVED');
 
         const con = findConnection(socket.id);
         con.lat = lat;
@@ -80,7 +74,7 @@ function pushLocations() {
             lat: con.lat,
             lng: con.lng
         }));
-    console.log(`Pushing these locations: ${locs.join(' ')}`);
+    
     io.emit('pushLocations', locs);
 }
 

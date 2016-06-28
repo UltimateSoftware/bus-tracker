@@ -18,8 +18,6 @@ function initMap() {
     directionsService = new google.maps.DirectionsService;
     stepDisplay = new google.maps.InfoWindow;
     geocoder = new google.maps.Geocoder();
-    console.log('in init function');
-
 
     // Setup map based on current positon
     navigator.geolocation.getCurrentPosition(function(position) {

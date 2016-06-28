@@ -21,7 +21,7 @@ function updatePeoplesPositions(locs) {
                 lng: locs[i].lng
             },
             title: locs[i].route,
-            icon: "http://maps.google.com/mapfiles/ms/icons/purple-dot.png"
+            icon: "https://maps.google.com/mapfiles/ms/icons/blue-dot.png"
         });
 
         attachInstructionText(personMarker, "BUS: " + locs[i].route)
@@ -40,10 +40,12 @@ function updateCurrentPosition(position) {
     };
     if (destinationRoutes.length > 1) {
         console.log('ERROR');
-    } else { //distance logic here
-        console.log('DESTINATION ROUTES', destinationRoutes);
+    } else {
+
+        //distance logic here        
         var route = destinationRoutes[0];
         var minDistance = undefined;
+
         route.legs.forEach(function(leg) {
             leg.steps.forEach(function(step) {
                 if (step.travel_mode === 'TRANSIT') {
@@ -67,12 +69,6 @@ function updateCurrentPosition(position) {
     }
     // remove current positon marker
     myMarker.setMap(null);
-
-    // create marker with appropriate color to match my preferences
-    myMarker = new google.maps.Marker({
-        map: map,
-        position: myPosition
-    });
 
     window.socket.emit('updateLocation', myPosition);
 }
