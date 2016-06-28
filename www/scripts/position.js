@@ -39,7 +39,7 @@ function updateCurrentPosition(position) {
         lng: position.coords.longitude
     };
     if (destinationRoutes.length > 1) {
-        console.log('DAMMIT');
+        console.log('ERROR');
     } else { //distance logic here
         console.log('DESTINATION ROUTES', destinationRoutes);
         var route = destinationRoutes[0];
