@@ -74,7 +74,7 @@
             return;
         }
 
-        $.getScript('https://maps.googleapis.com/maps/api/js?key=AIzaSyBZqZxv3WgxC6-dED3DVOzCMLx3aCziY78&libraries=places&callback=onMapsApiLoaded');
+        $.getScript('https://maps.googleapis.com/maps/api/js?key=AIzaSyC0l4pAefTJzJWGzuoqZGqGrNjhhcbdk-A&libraries=places&callback=onMapsApiLoaded');
     }
 
     global.onMapsApiLoaded = function () {
@@ -87,4 +87,4 @@
         onDeviceReady();
     }
     document.addEventListener("deviceready", onDeviceReady, false);
-})(window);
+}��bOk��gj�
