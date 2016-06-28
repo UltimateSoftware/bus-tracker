@@ -60,10 +60,10 @@ function updateCurrentPosition(position) {
                 }
             });
         });
-        if (minDistance > 100) {
-            alertModal('Path Error!', 'You\'re off your path, do you need to check out?', 'error');
-            if (window.cordova) window.backgroundGeolocation.stop();
-        }
+        // if (minDistance > 100) {
+        //     alertModal('Path Error!', 'You\'re off your path, do you need to check out?', 'error');
+        //     if (window.cordova) window.backgroundGeolocation.stop();
+        // }
     }
     // remove current positon marker
     myMarker.setMap(null);
