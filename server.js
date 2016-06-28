@@ -6,8 +6,7 @@ const app = express();
 
 const http = require('http').Server(app);
 
-// const SOCKET_PORT = 2223;
-const PORT = 5000;
+const PORT = 80;
 const PATHS = {
     app: path.join(__dirname, 'www')
 };
