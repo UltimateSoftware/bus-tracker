@@ -74,7 +74,7 @@
             return;
         }
 
-        $.getScript('https://maps.googleapis.com/maps/api/js?key=AIzaSyC0l4pAefTJzJWGzuoqZGqGrNjhhcbdk-A&libraries=places&callback=onMapsApiLoaded');
+        $.getScript('https://maps.googleapis.com/maps/api/js?key=AIzaSyDwXt4W2MKNbueLKCO4sZsh4VfhZZOdNOg&libraries=places&callback=onMapsApiLoaded');
     }
 
     global.onMapsApiLoaded = function () {
